@@ -7,14 +7,18 @@ import { KioskSection } from './components/Kiosk/KioskSection';
 import { ReferralSection } from './components/Referral/ReferralSection';
 import { WalletSection } from './components/Wallet/WalletSection';
 import { HistorySection } from './components/History/HistorySection';
+import { MarketplaceSection } from './components/Marketplace/MarketplaceSection';
 import { ExternalDashboardContainer } from './components/ExternalDashboard/ExternalDashboardContainer';
 import { Login } from './components/Auth/Login';
 import { Signup } from './components/Auth/Signup';
+import { AdminLogin } from './components/Auth/AdminLogin';
+import { AdminDashboard } from './components/Admin/AdminDashboard';
 export function App() {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isExternalDashboard, setIsExternalDashboard] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authView, setAuthView] = useState<'login' | 'signup'>('login');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [authView, setAuthView] = useState<'login' | 'signup' | 'adminLogin'>('login');
   const [userEmail, setUserEmail] = useState('');
   // Toggle between main app and external dashboard
   const toggleExternalDashboard = () => {
@@ -24,26 +28,39 @@ export function App() {
   const handleLogin = (email: string) => {
     setUserEmail(email);
     setIsAuthenticated(true);
+    setIsAdmin(false);
+  };
+  // Handle admin login
+  const handleAdminLogin = (email: string) => {
+    setUserEmail(email);
+    setIsAuthenticated(true);
+    setIsAdmin(true);
   };
   // Handle user signup
   const handleSignup = (email: string) => {
     setUserEmail(email);
     setIsAuthenticated(true);
+    setIsAdmin(false);
   };
   // Handle user logout
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setIsAdmin(false);
     setUserEmail('');
+    setAuthView('login');
   };
-  // Switch between login and signup views
+  // Switch between login views
   const switchToLogin = () => setAuthView('login');
   const switchToSignup = () => setAuthView('signup');
+  const switchToAdminLogin = () => setAuthView('adminLogin');
   const renderSection = () => {
     switch (activeSection) {
       case 'dashboard':
         return <Dashboard setActiveSection={setActiveSection} />;
       case 'delivery':
         return <DeliverySection />;
+      case 'marketplace':
+        return <MarketplaceSection />;
       case 'kiosk':
         return <KioskSection />;
       case 'referral':
@@ -72,9 +89,19 @@ export function App() {
   }
   // If user is not authenticated, show login or signup
   if (!isAuthenticated) {
-    return authView === 'login' ? <Login onLogin={handleLogin} onSwitchToSignup={switchToSignup} /> : <Signup onSignup={handleSignup} onSwitchToLogin={switchToLogin} />;
+    if (authView === 'login') {
+      return <Login onLogin={handleLogin} onSwitchToSignup={switchToSignup} onSwitchToAdminLogin={switchToAdminLogin} />;
+    } else if (authView === 'signup') {
+      return <Signup onSignup={handleSignup} onSwitchToLogin={switchToLogin} />;
+    } else {
+      return <AdminLogin onLogin={handleAdminLogin} onSwitchToUserLogin={switchToLogin} />;
+    }
   }
-  // Main app view for authenticated users
+  // If user is admin, show admin dashboard
+  if (isAdmin) {
+    return <AdminDashboard adminEmail={userEmail} onLogout={handleLogout} />;
+  }
+  // Main app view for authenticated regular users
   return <div className="flex h-screen bg-gray-50">
       <Sidebar activeSection={activeSection} setActiveSection={setActiveSection} onLogout={handleLogout} userEmail={userEmail} />
       <div className="flex flex-col flex-1 overflow-hidden">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { HomeIcon, TruckIcon, ShoppingBagIcon, UsersIcon, WalletIcon, ClockIcon, LogOutIcon, UserIcon } from 'lucide-react';
+import { HomeIcon, TruckIcon, ShoppingBagIcon, UsersIcon, WalletIcon, ClockIcon, LogOutIcon, UserIcon, StoreIcon } from 'lucide-react';
 interface SidebarProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
@@ -20,6 +20,10 @@ export const Sidebar = ({
     id: 'delivery',
     label: 'Delivery',
     icon: TruckIcon
+  }, {
+    id: 'marketplace',
+    label: 'Marketplace',
+    icon: StoreIcon
   }, {
     id: 'kiosk',
     label: 'Kiosk',

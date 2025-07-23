@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { UserIcon, LockIcon } from 'lucide-react';
-interface LoginProps {
+import { UserIcon, LockIcon, ShieldIcon } from 'lucide-react';
+interface AdminLoginProps {
   onLogin: (email: string) => void;
-  onSwitchToSignup: () => void;
-  onSwitchToAdminLogin: () => void;
+  onSwitchToUserLogin: () => void;
 }
-export const Login = ({
+export const AdminLogin = ({
   onLogin,
-  onSwitchToSignup,
-  onSwitchToAdminLogin
-}: LoginProps) => {
+  onSwitchToUserLogin
+}: AdminLoginProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -24,23 +22,28 @@ export const Login = ({
       setIsLoading(false);
       return;
     }
-    // For demo purposes, allow any login
-    setTimeout(() => {
-      onLogin(email);
+    // For demo purposes, allow any login with admin in the email
+    if (email.includes('admin')) {
+      setTimeout(() => {
+        onLogin(email);
+        setIsLoading(false);
+      }, 1000);
+    } else {
+      setError('Invalid admin credentials');
       setIsLoading(false);
-    }, 1000);
+    }
   };
   return <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
+          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-indigo-600">
+            <ShieldIcon className="h-8 w-8 text-white" />
+          </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Admin Portal
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <button onClick={onSwitchToSignup} className="font-medium text-indigo-600 hover:text-indigo-500">
-              create a new account
-            </button>
+            Sign in to access the administration dashboard
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -53,7 +56,7 @@ export const Login = ({
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <UserIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                 </div>
-                <input id="email-address" name="email" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} className="appearance-none rounded-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address" />
+                <input id="email-address" name="email" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} className="appearance-none rounded-none relative block w-full px-3 py-2 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Admin Email Address" />
               </div>
             </div>
             <div>
@@ -106,13 +109,13 @@ export const Login = ({
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-2 bg-gray-50 text-gray-500">
-                Are you an administrator?
+                Not an administrator?
               </span>
             </div>
           </div>
           <div className="mt-6">
-            <button onClick={onSwitchToAdminLogin} className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Go to Admin Login
+            <button onClick={onSwitchToUserLogin} className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Go to User Login
             </button>
           </div>
         </div>
@@ -125,7 +128,8 @@ export const Login = ({
             </div>
             <div className="ml-3">
               <p className="text-sm text-blue-700">
-                For demo purposes, you can use any email and password
+                For demo purposes, use any email containing "admin" (e.g.,
+                admin@example.com)
               </p>
             </div>
           </div>
